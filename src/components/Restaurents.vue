@@ -1,20 +1,20 @@
 <template>
-	<div class="one-category">
-		<h3>{{ restaurents[0].category }}</h3>
+	<div v-bind:id="category.category" class="one-category">
+		<h3>
+			{{ category.category }}
+		</h3>
 		<div class="restaurents">
 			<div
 				class="res-container"
 				:key="index"
-				v-for="(restau, index) in restaurents[0].restaurantList"
+				v-for="(restau, index) in category.restaurantList"
 			>
 				<Restaurent v-if="index < currShowNumber" :res="restau" />
 				<OneResExtra
 					@load-more="loadMore"
 					v-if="index == currShowNumber"
 					:res="restau"
-					:itemsLeft="
-						restaurents[0].restaurantList.length - currShowNumber
-					"
+					:itemsLeft="category.restaurantList.length - currShowNumber"
 				/>
 			</div>
 		</div>
@@ -28,7 +28,7 @@ import OneResExtra from "./OneResExtra.vue";
 export default {
 	name: "Restaurents",
 	props: {
-		restaurents: Array,
+		category: Object,
 	},
 	data() {
 		return {
@@ -41,7 +41,7 @@ export default {
 	},
 	methods: {
 		loadMore() {
-			this.currShowNumber += 5;
+			this.currShowNumber += 3;
 		},
 	},
 };

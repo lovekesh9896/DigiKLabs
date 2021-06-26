@@ -1,23 +1,27 @@
 <template>
 	<div class="container">
-		<Navigation :restaurents="restaurents" />
-		<Restaurents :restaurents="restaurents" />
+		<Navigation
+			@navigation-selected="handleNavigation"
+			:restaurents="restaurents"
+		/>
+		<Categories :showAll="showAll" :restaurents="restaurents" />
 	</div>
 </template>
 
 <script>
 import Navigation from "./components/Navigation.vue";
-import Restaurents from "./components/Restaurents.vue";
+import Categories from "./components/Categories.vue";
+
 export default {
 	name: "App",
 	components: {
 		Navigation,
-		Restaurents,
+		Categories,
 	},
 	data() {
 		return {
 			restaurents: [],
-			showAddTask: false,
+			showAll: false,
 		};
 	},
 	methods: {
@@ -26,7 +30,30 @@ export default {
 				"https://mocki.io/v1/3fb1488d-bbdb-4ddd-9a03-a0d2efc98597"
 			);
 			let json = await res.json();
+			// add extra category only on swiggy
+			let allResArr = [];
+			for (let i = 0; i < json.length; i++) {
+				for (let j = 0; j < json[i].restaurantList.length; j++) {
+					if (json[i].restaurantList[j].isExlusive) {
+						allResArr.push(json[i].restaurantList[j]);
+					}
+				}
+			}
+			let onlyOnSwiggy = {
+				category: "Only on swiggy",
+				restaurantList: allResArr,
+			};
+			json = [...json, onlyOnSwiggy];
 			return json;
+		},
+		handleNavigation(index) {
+			// when show all restaurents is clicked
+			if (index == 5 && !this.showAll) {
+				this.showAll = true;
+				window.scrollTo(0, 0);
+			} else if (index != 5 && this.showAll) {
+				this.showAll = false;
+			}
 		},
 	},
 	async created() {
@@ -46,6 +73,7 @@ body {
 	font-family: "Poppins", sans-serif;
 	text-align: center;
 	margin-top: 100px;
+	scroll-behavior: smooth;
 }
 .container {
 	width: 100%;
